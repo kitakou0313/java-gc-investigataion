@@ -10,21 +10,28 @@ public class GcInvestigation {
     public static void main(String[] args) {
         System.gc();
 
-        System.out.println("=== オブジェクト確保前 ===");
-        printG1RegionMemoryUsage();
+        // System.out.println("=== オブジェクト確保前 ===");
+        // printG1RegionMemoryUsage();
 
-        // ブロック内で定義することでブロック内の処理が終わった後にGCされることを確認
-        {
-            List<byte[]> objects = generateObjects();
+        List<byte[]> objects = generateObjects();
+
+        // System.out.println("\n=== オブジェクト確保後 ===");
+        try {
+            Thread.sleep(2000);
+        } catch (Exception e) {
         }
-
-        System.out.println("\n=== オブジェクト確保後 ===");
         System.gc();
-        printG1RegionMemoryUsage();
+        // printG1RegionMemoryUsage();
 
-        System.out.println("\n=== 参照の解除後 ===");
+        objects = null; // 参照を解除してGCでの回収対象にする
+
+        // System.out.println("\n=== 参照の解除後 ===");
+        try {
+            Thread.sleep(2000);
+        } catch (Exception e) {
+        }
         System.gc();
-        printG1RegionMemoryUsage();
+        // printG1RegionMemoryUsage();
     }
 
     /** 各 G1 GC 領域のメモリ使用量を stdout に出力し、GC を実行する */
@@ -44,8 +51,7 @@ public class GcInvestigation {
         for (int i = 0; i < 100; i++) {
             objects.add(new byte[1024 * 1024]); // 1MB × 100 = 100MB
         }
-        System.out.printf("\nオブジェクト確保完了: %d 個 (合計 %d MB)%n",
-                objects.size(), objects.size());
+        // System.out.printf("\nオブジェクト確保完了: %d 個 (合計 %d MB)%n",objects.size(), objects.size());
         return objects; // 参照を返すことで GC されないようにする
     }
 }
