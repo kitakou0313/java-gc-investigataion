@@ -8,22 +8,27 @@ import java.util.List;
 public class GcInvestigation {
 
     public static void main(String[] args) {
+        System.gc();
+
         System.out.println("=== オブジェクト確保前 ===");
         printG1RegionMemoryUsage();
 
-        List<byte[]> objects = generateObjects();
+        // ブロック内で定義することでブロック内の処理が終わった後にGCされることを確認
+        {
+            List<byte[]> objects = generateObjects();
+        }
 
         System.out.println("\n=== オブジェクト確保後 ===");
+        System.gc();
         printG1RegionMemoryUsage();
 
-        objects = null; // 参照を手放す (以降 GC 対象になる)
         System.out.println("\n=== 参照の解除後 ===");
+        System.gc();
         printG1RegionMemoryUsage();
     }
 
     /** 各 G1 GC 領域のメモリ使用量を stdout に出力し、GC を実行する */
     static void printG1RegionMemoryUsage() {
-        System.gc();
         for (MemoryPoolMXBean pool : ManagementFactory.getMemoryPoolMXBeans()) {
             if (pool.getType() == MemoryType.HEAP) {
                 MemoryUsage u = pool.getUsage();
