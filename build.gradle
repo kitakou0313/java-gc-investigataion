@@ -14,6 +14,6 @@ java {
 jar {
     archiveFileName = 'gc-investigation.jar'
     manifest {
-        attributes 'Main-Class': 'com.example.gc.GcInvestigation'
+        attributes 'Main-Class': 'GcInvestigation'
     }
 }
