@@ -8,30 +8,48 @@ import java.util.List;
 public class GcInvestigation {
 
     public static void main(String[] args) {
-        System.gc();
+        testCase2();
+    }
 
-        // System.out.println("=== オブジェクト確保前 ===");
-        // printG1RegionMemoryUsage();
+    private static void testCase1(){
+        System.gc();
 
         List<byte[]> objects = generateObjects();
 
-        // System.out.println("\n=== オブジェクト確保後 ===");
         try {
             Thread.sleep(2000);
         } catch (Exception e) {
         }
         System.gc();
-        // printG1RegionMemoryUsage();
 
         objects = null; // 参照を解除してGCでの回収対象にする
 
-        // System.out.println("\n=== 参照の解除後 ===");
         try {
             Thread.sleep(2000);
         } catch (Exception e) {
         }
         System.gc();
-        // printG1RegionMemoryUsage();
+    }
+
+    private static void testCase2(){
+        System.gc();
+
+        // objectの生成をブロック内で行うことでブロック終了後にGCの対象になることを確認する
+        {
+            List<byte[]> objects = generateObjects();
+        }
+
+        try {
+            Thread.sleep(2000);
+        } catch (Exception e) {
+        }
+        System.gc();
+
+        try {
+            Thread.sleep(2000);
+        } catch (Exception e) {
+        }
+        System.gc();
     }
 
     /** 各 G1 GC 領域のメモリ使用量を stdout に出力し、GC を実行する */
