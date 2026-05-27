@@ -28,15 +28,35 @@
                 - どうやって判定している？
         - Survivor
             - 一定以上の回数を生き残った場合Old regionに移動する（promotion）
+    - 開放可能な領域を開放する
+        - 上記の移動で開放可能になった領域
 
 以下はYoung-Only Phaseの後Old Generation領域の占める割合が閾値（Initiating Heap Occupancy threshold）を超えた時に実行される。
 
 - Concurrent Start
+    - Normal young collectionと同時にconcurrent markingをバックグラウンドで実行する
+    - Old generation内の全てのLive Objectの発見
+    - これはバックグラウンドでの実行であり、アプリケーションの処理の実行と同時に行われる
 - Remark
+    - アプリケーションを停止させ（Stop the world）、marking処理を完了させる　
+        - アプリケーションの処理が実行されているとmarking処理が終了できない（参照グラフが確定しない）ため
+    - 以下の処理を実行する
+        - marking結果の確定
+        - WeakReference, SoftReferenceを処理する
+            - どんな処理を？
+        - 使用されていないクラスのアンロード
+        - すでに空になっているregionの回収
+    - 開放すべきOld Regionの選定
+        - 次の処理で使用するため
 - Cleanup
-
-Young-Only Phaseの後、Old Generation領域の占める割合が閾値を超えた時に実行される。
+    - アプリケーションを停止させ（Stop the world）、次のSpace-Reclamation Phaseを実行すべきか開放可能な領域を見て判断する
 
 ### Space-Reclamation Phase
+- Young, Old世代両方のregionを対象にするGC
+- 特徴
+    - 回収される最低のOld region数が決まっている
+        - 候補region数 / G1MixedGCCountTarget
+    - 上記の最低回収数の回収後、停止時間に対してある程度のバッファを残して止まる
+    - G1HeapWastePercent未満の開放可能な領域しか持たないregionのみになったら停止
 
 ### （不足時のみ）Full GC
