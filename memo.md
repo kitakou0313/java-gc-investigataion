@@ -28,6 +28,8 @@
                 - どうやって判定している？
         - Survivor
             - 一定以上の回数を生き残った場合Old regionに移動する（promotion）
+                - GCの生存回数をObjectごとにカウントしている
+            - この時Old regionも増えていく
     - 開放可能な領域を開放する
         - 上記の移動で開放可能になった領域
 
@@ -35,6 +37,7 @@
 
 - Concurrent Start
     - Normal young collectionと同時にconcurrent markingをバックグラウンドで実行する
+    - collection setの構築
     - Old generation内の全てのLive Objectの発見
     - これはバックグラウンドでの実行であり、アプリケーションの処理の実行と同時に行われる
 - Remark
@@ -60,3 +63,4 @@
     - G1HeapWastePercent未満の開放可能な領域しか持たないregionのみになったら停止
 
 ### （不足時のみ）Full GC
+- ObjectのLive状態の収集時にメモリの不足が明らかになった場合、Stop the worldして全て世代のregionを対象にGCを行う
